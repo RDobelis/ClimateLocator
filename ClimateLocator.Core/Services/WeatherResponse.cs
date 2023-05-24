@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ClimateLocator.Core.Services
+﻿namespace ClimateLocator.Core.Services
 {
-    internal class WeatherResponse
+    public class WeatherResponse
     {
+        public double Temp { get; set; }
+        public int Rh { get; set; }
+        public WeatherDetails Weather { get; set; }
     }
 }

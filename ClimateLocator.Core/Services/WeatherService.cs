@@ -1,48 +1,59 @@
 ﻿using ClimateLocator.Core.Interfaces;
 using ClimateLocator.Core.Models;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Configuration;
+using ClimateLocator.Core.Services;
 using Newtonsoft.Json;
-using Polly;
-using Polly.Extensions.Http;
 
-namespace ClimateLocator.Core.Services
+public class WeatherService : IWeatherService
 {
-    public class WeatherService : IWeatherService
+    private readonly ICacheService _cacheService;
+    private readonly IDatabaseService _databaseService;
+    private readonly HttpClient _client;
+
+    public WeatherService(ICacheService cacheService, IDatabaseService databaseService, HttpClient client)
     {
-        private readonly HttpClient _httpClient;
-        private readonly string _apiKey;
-        private readonly IAsyncPolicy<HttpResponseMessage> _retryPolicy;
-        private readonly IMemoryCache _memoryCache;
+        _cacheService = cacheService;
+        _databaseService = databaseService;
+        _client = client;
+    }
 
-        public WeatherService(HttpClient httpClient, IConfiguration configuration, IMemoryCache memoryCache)
-        {
-            _httpClient = httpClient;
-            _apiKey = configuration["WeatherApiKey"];
+    public async Task<WeatherInfo> GetWeatherInfo(double latitude, double longitude)
+    {
+        // Get data from the cache
+        var cachedInfo = await _cacheService.GetWeatherInfo(latitude, longitude);
+        if (cachedInfo != null)
+            return cachedInfo;
 
-            _retryPolicy = HttpPolicyExtensions
-                .HandleTransientHttpError()
-                .RetryAsync(3);
-
-            _memoryCache = memoryCache;
-        }
-
-        public async Task<WeatherInfo> GetWeatherInfo(double latitude, double longitude)
-        {
-            var cacheKey = $"WeatherInfo-{latitude}-{longitude}";
-            if (!_memoryCache.TryGetValue(cacheKey, out WeatherInfo cachedWeatherInfo))
+        // Get data from the database
+        var historicalInfo = await _databaseService.GetHistoricalWeatherInfo(latitude, longitude);
+        if (historicalInfo != null)
+            return new WeatherInfo
             {
-                var url = $"https://api.weatherbit.io/v2.0/current?lat={latitude}&lon={longitude}&key={_apiKey}";
-                var response = await _retryPolicy.ExecuteAsync(() => _httpClient.GetAsync(url));
-                response.EnsureSuccessStatusCode();
+                Latitude = historicalInfo.Latitude,
+                Longitude = historicalInfo.Longitude,
+                Temperature = historicalInfo.Temperature,
+                Humidity = historicalInfo.Humidity,
+                Description = historicalInfo.Description,
+                Timestamp = historicalInfo.Timestamp
+            };
 
-                var content = await response.Content.ReadAsStringAsync();
-                cachedWeatherInfo = JsonConvert.DeserializeObject<WeatherInfo>(content);
+        // Fetch data from the external API
+        var response = await _client.GetStringAsync($"?lat={latitude}&lon={longitude}");
+        var data = JsonConvert.DeserializeObject<WeatherResponse>(response);
+        var weatherInfo = new WeatherInfo
+        {
+            Latitude = latitude,
+            Longitude = longitude,
+            Temperature = data.Temp,
+            Humidity = data.Rh,
+            Description = Enum.Parse<WeatherDescription>(data.Weather.Description),
 
-                _memoryCache.Set(cacheKey, cachedWeatherInfo, TimeSpan.FromMinutes(5));
-            }
-            
-            return cachedWeatherInfo;
-        }
+            Timestamp = DateTime.Now
+        };
+
+        // Store data in the cache and database
+        await _cacheService.StoreWeatherInfo(weatherInfo);
+        await _databaseService.StoreWeatherInfo(weatherInfo);
+
+        return weatherInfo;
     }
 }

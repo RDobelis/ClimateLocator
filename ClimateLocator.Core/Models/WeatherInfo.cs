@@ -2,8 +2,11 @@
 {
     public class WeatherInfo
     {
-        public double Temp { get; set; }
-        public double Rh { get; set; }
-        public WeatherDescription Weather { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public double? Temperature { get; set; }
+        public double? Humidity { get; set; }
+        public WeatherDescription Description { get; set; }
+        public DateTime Timestamp { get; set; }
     }
 }

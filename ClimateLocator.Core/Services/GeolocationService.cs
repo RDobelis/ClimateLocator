@@ -1,49 +1,59 @@
 ﻿using ClimateLocator.Core.Interfaces;
 using ClimateLocator.Core.Models;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using Polly;
-using Polly.Extensions.Http;
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using ClimateLocator.Core.Services;
 
-namespace ClimateLocator.Core.Services
+public class GeolocationService : IGeolocationService
 {
-    public class GeolocationService : IGeolocationService
+    private readonly ICacheService _cacheService;
+    private readonly IDatabaseService _databaseService;
+    private readonly HttpClient _client;
+
+    public GeolocationService(ICacheService cacheService, IDatabaseService databaseService, HttpClient client)
     {
-        private readonly HttpClient _httpClient;
-        private readonly string _apiKey;
-        private readonly IAsyncPolicy<HttpResponseMessage> _retryPolicy;
-        private readonly IMemoryCache _memoryCache;
+        _cacheService = cacheService;
+        _databaseService = databaseService;
+        _client = client;
+    }
 
-        public GeolocationService(HttpClient httpClient, IConfiguration configuration, IMemoryCache memoryCache)
-        {
-            _httpClient = httpClient;
-            _apiKey = configuration["GeolocationApiKey"];
+    public async Task<GeolocationInfo> GetGeolocationInfo(string ipAddress)
+    {
+        // Get data from the cache
+        var cachedInfo = await _cacheService.GetGeolocationInfo(ipAddress);
+        if (cachedInfo != null)
+            return cachedInfo;
 
-            _retryPolicy = HttpPolicyExtensions
-                .HandleTransientHttpError()
-                .RetryAsync(3);
-
-            _memoryCache = memoryCache;
-        }
-
-        public async Task<GeolocationInfo> GetGeolocationInfo(string ipAddress)
-        {
-            var cacheKey = $"GeolocationInfo-{ipAddress}";
-
-            if (!_memoryCache.TryGetValue(cacheKey, out GeolocationInfo cachedGeolocationInfo))
+        // Get data from the database
+        var historicalInfo = await _databaseService.GetHistoricalGeolocationInfo(ipAddress);
+        if (historicalInfo != null)
+            return new GeolocationInfo
             {
-                var url = $"https://api.ip2location.io/?key={_apiKey}&ip={ipAddress}";
-                var response = await _retryPolicy.ExecuteAsync(() => _httpClient.GetAsync(url));
-                response.EnsureSuccessStatusCode();
+                IPAddress = historicalInfo.IPAddress,
+                City = historicalInfo.City,
+                Country = historicalInfo.Country,
+                Latitude = historicalInfo.Latitude,
+                Longitude = historicalInfo.Longitude
+            };
 
-                var content = await response.Content.ReadAsStringAsync();
-                cachedGeolocationInfo = JsonConvert.DeserializeObject<GeolocationInfo>(content);
+        // Fetch data from the external API
+        var response = await _client.GetStringAsync($"?ip={ipAddress}");
+        var data = JsonConvert.DeserializeObject<GeolocationResponse>(response);
+        var geolocationInfo = new GeolocationInfo
+        {
+            IPAddress = ipAddress,
+            City = data.CityName,
+            Country = data.CountryName,
+            Latitude = data.Latitude,
+            Longitude = data.Longitude
+        };
 
-                _memoryCache.Set(cacheKey, cachedGeolocationInfo, TimeSpan.FromMinutes(5));
-            }
+        // Store data in the cache and database
+        await _cacheService.StoreGeolocationInfo(geolocationInfo);
+        await _databaseService.StoreGeolocationInfo(geolocationInfo);
 
-            return cachedGeolocationInfo;
-        }
+        return geolocationInfo;
     }
 }
