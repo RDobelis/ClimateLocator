@@ -6,4 +6,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ClimateLocator.Core\ClimateLocator.Core.csproj" />
+    <ProjectReference Include="..\ClimateLocator.Data\ClimateLocator.Data.csproj" />
+    <ProjectReference Include="..\ClimateLocator.Tests\ClimateLocator.Tests.csproj" />
+    <ProjectReference Include="..\ClimateLocator\ClimateLocator.API.csproj" />
+  </ItemGroup>
+
 </Project>

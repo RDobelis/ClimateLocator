@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33712.159
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimateLocator", "ClimateLocator\ClimateLocator.csproj", "{ECC53D2A-80C8-49D9-BF3F-8B7F7AEFAEFE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimateLocator.API", "ClimateLocator\ClimateLocator.API.csproj", "{ECC53D2A-80C8-49D9-BF3F-8B7F7AEFAEFE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimateLocator.Core", "ClimateLocator.Core\ClimateLocator.Core.csproj", "{98F915AE-3AE7-4893-9A34-0F60CDCD6FE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimateLocator.Core", "ClimateLocator.Core\ClimateLocator.Core.csproj", "{98F915AE-3AE7-4893-9A34-0F60CDCD6FE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimateLocator.Data", "ClimateLocator.Data\ClimateLocator.Data.csproj", "{E7A13AF7-274F-477C-BE26-CE6E5CC80044}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimateLocator.Data", "ClimateLocator.Data\ClimateLocator.Data.csproj", "{E7A13AF7-274F-477C-BE26-CE6E5CC80044}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimateLocator.Services", "ClimateLocator.Services\ClimateLocator.Services.csproj", "{FDF58874-A7BB-4A10-8D09-98BA1E987C4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimateLocator.Tests", "ClimateLocator.Tests\ClimateLocator.Tests.csproj", "{525F631E-4D73-4F6C-96A7-0ED5A8A5F8F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimateLocator.Tests", "ClimateLocator.Tests\ClimateLocator.Tests.csproj", "{525F631E-4D73-4F6C-96A7-0ED5A8A5F8F1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimateLocator.Services", "ClimateLocator.Services\ClimateLocator.Services.csproj", "{F51D2B7A-D9C4-44FD-8E8E-0CBEF2412C61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,14 +31,14 @@ Global
 		{E7A13AF7-274F-477C-BE26-CE6E5CC80044}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7A13AF7-274F-477C-BE26-CE6E5CC80044}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7A13AF7-274F-477C-BE26-CE6E5CC80044}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FDF58874-A7BB-4A10-8D09-98BA1E987C4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FDF58874-A7BB-4A10-8D09-98BA1E987C4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FDF58874-A7BB-4A10-8D09-98BA1E987C4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FDF58874-A7BB-4A10-8D09-98BA1E987C4E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{525F631E-4D73-4F6C-96A7-0ED5A8A5F8F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{525F631E-4D73-4F6C-96A7-0ED5A8A5F8F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{525F631E-4D73-4F6C-96A7-0ED5A8A5F8F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{525F631E-4D73-4F6C-96A7-0ED5A8A5F8F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F51D2B7A-D9C4-44FD-8E8E-0CBEF2412C61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F51D2B7A-D9C4-44FD-8E8E-0CBEF2412C61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F51D2B7A-D9C4-44FD-8E8E-0CBEF2412C61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F51D2B7A-D9C4-44FD-8E8E-0CBEF2412C61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
