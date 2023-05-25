@@ -2,8 +2,8 @@
 
 namespace ClimateLocator.Core.Interfaces
 {
-    public interface IGeoLocationService
+    public interface ILocationService
     {
-        Task<IpLocation> GetIpLocationAsync();
+        Task<Location> GetLocationAsync(string ip);
     }
 }

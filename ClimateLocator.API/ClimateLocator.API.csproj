@@ -21,7 +21,6 @@
     <ProjectReference Include="..\ClimateLocator.Core\ClimateLocator.Core.csproj" />
     <ProjectReference Include="..\ClimateLocator.Data\ClimateLocator.Data.csproj" />
     <ProjectReference Include="..\ClimateLocator.Services\ClimateLocator.Services.csproj" />
-    <ProjectReference Include="..\ClimateLocator.Tests\ClimateLocator.Tests.csproj" />
   </ItemGroup>
 
 </Project>

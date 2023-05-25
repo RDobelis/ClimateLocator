@@ -4,6 +4,6 @@ namespace ClimateLocator.Core.Interfaces
 {
     public interface IWeatherService
     {
-        Task<WeatherData> GetWeatherAsync(IpLocation location);
+        Task<Weather> GetWeatherAsync(Location location);
     }
 }

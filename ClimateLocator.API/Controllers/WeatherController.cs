@@ -1,4 +1,4 @@
-﻿using ClimateLocator.Services;
+﻿using ClimateLocator.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClimateLocator.API.Controllers
@@ -7,22 +7,29 @@ namespace ClimateLocator.API.Controllers
     [ApiController]
     public class WeatherController : ControllerBase
     {
-        private readonly WeatherService _weatherService;
+        private readonly DataProvider _dataProvider;
 
-        public WeatherController(WeatherService weatherService)
+        public WeatherController(DataProvider dataProvider)
         {
-            _weatherService = weatherService;
+            _dataProvider = dataProvider;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetWeatherDataByIp(string ip)
+        public async Task<IActionResult> GetWeather(string ip)
         {
-            var weatherData = await _weatherService.GetWeatherDataByIp(ip);
+            if (ip == null)
+            {
+                return BadRequest("Could not determine the IP address of the request originator.");
+            }
 
-            if (weatherData == null)
-                return NotFound();
+            var weather = await _dataProvider.GetWeatherAsync(ip);
 
-            return Ok(weatherData);
+            if (weather == null)
+            {
+                return NotFound("Could not find weather data for the specified IP address.");
+            }
+
+            return Ok(weather);
         }
     }
 }
