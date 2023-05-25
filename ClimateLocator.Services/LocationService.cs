@@ -29,45 +29,47 @@ namespace ClimateLocator.Services
 
         public async Task<Location> GetLocationAsync(string ip)
         {
-            Location location = null;
-
             try
             {
-                await _circuitBreakerPolicy.ExecuteAsync(async () =>
-                {
-                    var url = $"https://api.ip2location.io/?key={_apiKey}&ip={ip}";
-                    var response = await _httpClient.GetAsync(url);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        var locationResponse = JsonConvert.DeserializeObject<Location>(content);
-
-                        if (locationResponse != null)
-                        {
-                            var existingLocation = _context.Location.FirstOrDefault(l => l.Ip == locationResponse.Ip);
-                            if (existingLocation == null)
-                            {
-                                _context.Location.Add(locationResponse);
-                                await _context.SaveChangesAsync();
-                                location = locationResponse;
-                            }
-                            else
-                            {
-                                location = existingLocation;
-                            }
-
-                            _context.Querries.Add(new Query { Ip = ip });
-                            await _context.SaveChangesAsync();
-                        }
-                    }
-                });
+                return await _circuitBreakerPolicy.ExecuteAsync(async () => await GetLocationData(ip));
             }
             catch (BrokenCircuitException)
             {
                 throw new LocationServiceUnavailableException();
             }
+        }
 
-            return location;
+        private async Task<Location> GetLocationData(string ip)
+        {
+            var existingLocation = _context.Location.FirstOrDefault(l => l.Ip == ip);
+
+            if (existingLocation != null)
+                return existingLocation;
+
+            var locationResponse = await GetExternalLocationData(ip);
+
+            if (locationResponse != null)
+            {
+                _context.Location.Add(locationResponse);
+                await _context.SaveChangesAsync();
+            }
+
+            _context.Querries.Add(new Query { Ip = ip });
+            await _context.SaveChangesAsync();
+
+            return locationResponse;
+        }
+
+        private async Task<Location> GetExternalLocationData(string ip)
+        {
+            var url = $"https://api.ip2location.io/?key={_apiKey}&ip={ip}";
+            var response = await _httpClient.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Location>(content);
         }
     }
 }

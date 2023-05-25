@@ -14,21 +14,17 @@ namespace ClimateLocator.API.Controllers
             _dataProvider = dataProvider;
         }
 
-        [HttpGet]
+        [HttpGet("weather")]
         public async Task<IActionResult> GetWeather(string ip)
         {
-            if (ip == null)
-            {
+            if (ip == null) 
                 return BadRequest("Could not determine the IP address of the request originator.");
-            }
-
+            
             var weather = await _dataProvider.GetWeatherAsync(ip);
 
-            if (weather == null)
-            {
+            if (weather == null) 
                 return NotFound("Could not find weather data for the specified IP address.");
-            }
-
+            
             return Ok(weather);
         }
     }

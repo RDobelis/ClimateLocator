@@ -29,37 +29,45 @@ namespace ClimateLocator.Services
 
         public async Task<Weather> GetWeatherAsync(Location location)
         {
-            Weather weather = null;
-
             try
             {
-                await _circuitBreakerPolicy.ExecuteAsync(async () =>
+                return await _circuitBreakerPolicy.ExecuteAsync(async () =>
                 {
-                    var url =
-                        $"https://api.weatherbit.io/v2.0/current?lat={location.Latitude}&lon={location.Longitude}&key={_apiKey}";
-
-                    var response = await _httpClient.GetAsync(url);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        var weatherResponse = JsonConvert.DeserializeObject<WeatherResponse>(content);
-                        weather = weatherResponse.Data.FirstOrDefault();
-
-                        if (weather != null)
-                        {
-                            weather.LocationId = location.Id;
-                            _context.Weather.Add(weather);
-                            await _context.SaveChangesAsync();
-                        }
-                    }
+                    return await FetchAndStoreWeatherData(location);
                 });
             }
             catch (BrokenCircuitException)
             {
                 throw new WeatherServiceUnavailableException();
             }
+        }
 
-            return weather;
+        private async Task<Weather> FetchAndStoreWeatherData(Location location)
+        {
+            var weatherData = await GetWeatherFromAPI(location);
+
+            if (weatherData != null)
+            {
+                weatherData.LocationId = location.Id;
+                _context.Weather.Add(weatherData);
+                await _context.SaveChangesAsync();
+            }
+
+            return weatherData;
+        }
+
+        private async Task<Weather> GetWeatherFromAPI(Location location)
+        {
+            var url = $"https://api.weatherbit.io/v2.0/current?lat={location.Latitude}&lon={location.Longitude}&key={_apiKey}";
+            var response = await _httpClient.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            var content = await response.Content.ReadAsStringAsync();
+            var weatherResponse = JsonConvert.DeserializeObject<WeatherResponse>(content);
+
+            return weatherResponse.Data.FirstOrDefault();
         }
     }
 }
