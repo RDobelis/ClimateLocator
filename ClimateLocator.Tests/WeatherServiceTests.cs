@@ -25,6 +25,7 @@ namespace ClimateLocator.Tests
         public async Task GetWeatherAsync_WithValidIp_ReturnsWeather()
         {
             var locationService = new LocationService(_httpClient, _configuration);
+
             var location = await locationService.GetLocationAsync(_testIp);
             var weather = await _weatherService.GetWeatherAsync(location);
 

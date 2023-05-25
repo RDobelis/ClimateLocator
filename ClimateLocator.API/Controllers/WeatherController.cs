@@ -7,9 +7,9 @@ namespace ClimateLocator.API.Controllers
     [ApiController]
     public class WeatherController : ControllerBase
     {
-        private readonly DataProvider _dataProvider;
+        private readonly IDataProvider _dataProvider;
 
-        public WeatherController(DataProvider dataProvider)
+        public WeatherController(IDataProvider dataProvider)
         {
             _dataProvider = dataProvider;
         }

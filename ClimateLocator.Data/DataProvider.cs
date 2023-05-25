@@ -4,7 +4,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace ClimateLocator.Data
 {
-    public class DataProvider
+    public class DataProvider : IDataProvider
     {
         private readonly ILocationService _locationService;
         private readonly IWeatherService _weatherService;
