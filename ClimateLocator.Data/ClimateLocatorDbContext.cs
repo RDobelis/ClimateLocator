@@ -11,5 +11,6 @@ namespace ClimateLocator.Data
 
         public DbSet<Weather> Weather { get; set; }
         public DbSet<Location> Location { get; set; }
+        public DbSet<Query> Querries { get; set; }
     }
 }

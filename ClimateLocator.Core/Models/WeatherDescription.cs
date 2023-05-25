@@ -2,9 +2,8 @@
 
 namespace ClimateLocator.Core.Models
 {
-    public class WeatherDescription
+    public class WeatherDescription : Entity
     {
-        public int Id { get; set; }
         [JsonProperty("description")]
         public string Description { get; set; }
     }
