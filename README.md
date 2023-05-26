@@ -78,3 +78,15 @@ Remember to replace the placeholders (e.g., `YOUR_WEATHERBIT_API_KEY`, `YOUR_GEO
 ## Author
 
 This application was developed by Rihards Dobelis. 
+
+## Screenshots
+
+<p align="center">
+  <b>Unit tests</b><br>
+  <img src="./Screenshots/TestCoverage.png" alt="Coverage">
+</p>
+
+<p align="center">
+  <b>WeatherController</b><br>
+  <img src="./Screenshots/WeatherController.png" alt="Controller">
+</p>
