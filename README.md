@@ -17,6 +17,10 @@ Before running the ClimateLocator application, ensure you have the following:
 - Weatherbit API key
 - Geolocation API key
 
+## Key Note
+
+In a real solution, the user's IP address can be fetched using `Request.HttpContext.Connection.RemoteIpAddress`. However, for the sake of simplicity and the ability to test a variety of IP addresses, this implementation of ClimateLocator uses the IP address as an argument for the controller.
+
 ## Getting Started
 
 Follow these steps to get started with ClimateLocator:
