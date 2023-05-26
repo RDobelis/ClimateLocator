@@ -13,6 +13,7 @@ namespace ClimateLocator.Services
     {
         private readonly HttpClient _httpClient;
         private readonly string _apiKey;
+        private readonly string _apiUrl;
         private readonly AsyncCircuitBreakerPolicy _circuitBreakerPolicy;
         private readonly ClimateLocatorDbContext _context;
 
@@ -20,6 +21,7 @@ namespace ClimateLocator.Services
         {
             _httpClient = httpClient;
             _apiKey = configuration.GetSection("WeatherApiKey").Value;
+            _apiUrl = configuration.GetSection("WeatherApiUrl").Value;
             _context = context;
 
             _circuitBreakerPolicy = Policy
@@ -58,7 +60,7 @@ namespace ClimateLocator.Services
 
         private async Task<Weather> GetWeatherFromAPI(Location location)
         {
-            var url = $"https://api.weatherbit.io/v2.0/current?lat={location.Latitude}&lon={location.Longitude}&key={_apiKey}";
+            var url = $"{_apiUrl}current?lat={location.Latitude}&lon={location.Longitude}&key={_apiKey}";
             var response = await _httpClient.GetAsync(url);
 
             if (!response.IsSuccessStatusCode)

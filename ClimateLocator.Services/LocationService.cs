@@ -13,6 +13,7 @@ namespace ClimateLocator.Services
     {
         private readonly HttpClient _httpClient;
         private readonly string _apiKey;
+        private readonly string _apiUrl;
         private readonly AsyncCircuitBreakerPolicy _circuitBreakerPolicy;
         private readonly ClimateLocatorDbContext _context;
 
@@ -20,6 +21,7 @@ namespace ClimateLocator.Services
         {
             _httpClient = httpClient;
             _apiKey = configuration.GetSection("GeolocationApiKey").Value;
+            _apiUrl = configuration.GetSection("GeolocationApiUrl").Value;
             _context = context;
 
             _circuitBreakerPolicy = Policy
@@ -62,7 +64,7 @@ namespace ClimateLocator.Services
 
         private async Task<Location> GetExternalLocationData(string ip)
         {
-            var url = $"https://api.ip2location.io/?key={_apiKey}&ip={ip}";
+            var url = $"{_apiUrl}?key={_apiKey}&ip={ip}";
             var response = await _httpClient.GetAsync(url);
 
             if (!response.IsSuccessStatusCode)
